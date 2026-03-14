@@ -52,7 +52,7 @@ const Player = (() => {
         return player;
     }
 
-    function update(dt, level) {
+    function update(dt, level, lowGravity) {
         if (player.dead) {
             player.deathTimer -= dt;
             if (player.deathTimer <= 0) {
@@ -112,9 +112,11 @@ const Player = (() => {
             player.vy *= JUMP_CUT;
         }
 
-        // Gravity
-        player.vy += Engine.GRAVITY;
-        if (player.vy > Engine.MAX_FALL) player.vy = Engine.MAX_FALL;
+        // Gravity (reduced in low-gravity levels)
+        const grav = lowGravity ? Engine.GRAVITY * 0.35 : Engine.GRAVITY;
+        const maxFall = lowGravity ? Engine.MAX_FALL * 0.5 : Engine.MAX_FALL;
+        player.vy += grav;
+        if (player.vy > maxFall) player.vy = maxFall;
 
         // Reset wall flags
         player.wallLeft = false;

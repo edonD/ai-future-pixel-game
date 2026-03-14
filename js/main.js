@@ -146,22 +146,8 @@
         // Update timer
         totalTime += dt;
 
-        // Level-specific gravity modifier
-        const origGravity = Engine.GRAVITY;
-        if (level.lowGravity) {
-            // Override gravity temporarily for this level
-            // We'll do it by adjusting player physics in update
-        }
-
         // Update player
-        if (level.lowGravity) {
-            // Reduce gravity for this level
-            const savedGrav = Engine.GRAVITY;
-            // Can't modify const, so handle in player update manually
-            player.vy += -Engine.GRAVITY * 0.5 * (dt * 60); // Counter half gravity each frame
-        }
-
-        Player.update(dt, level);
+        Player.update(dt, level, level.lowGravity);
         player = Player.get();
 
         // Conveyor belt effect
@@ -179,17 +165,16 @@
 
         // Check player on moving platform
         for (const mp of movingPlatforms) {
-            if (player.vy >= 0 &&
-                player.x + player.w > mp.cx &&
-                player.x < mp.cx + mp.w &&
-                player.y + player.h >= mp.cy &&
-                player.y + player.h <= mp.cy + mp.h + 4) {
+            const onTop = player.vy >= 0 &&
+                player.x + player.w > mp.cx + 2 &&
+                player.x < mp.cx + mp.w - 2 &&
+                player.y + player.h >= mp.cy - 2 &&
+                player.y + player.h <= mp.cy + mp.h + 6;
+            if (onTop) {
                 player.y = mp.cy - player.h;
                 player.vy = 0;
                 player.onGround = true;
-                // Move with platform
                 player.x += mp.dx || 0;
-                player.y += mp.dy || 0;
             }
         }
 
@@ -224,18 +209,21 @@
         // Check boss defeated
         if (level.boss && !bossDefeated) {
             const bossEnemy = Enemies.getAll().find(e => e.type === 'boss');
-            if (bossEnemy && !bossEnemy.active) {
+            if (bossEnemy && (bossEnemy.hp <= 0 || !bossEnemy.active)) {
                 bossDefeated = true;
-                // Reveal exit
-                // Place exit where boss was
-                const tx = Math.floor(bossEnemy.startX / Engine.TILE) + 1;
-                const ty = Math.floor((bossEnemy.startY + bossEnemy.h) / Engine.TILE);
-                level.tiles[ty * level.width + tx] = 7;
+                // Place exit at center of arena floor
+                const tx = Math.floor(level.width / 2);
+                const ty = level.height - 3;
+                if (ty >= 0 && tx >= 0 && ty * level.width + tx < level.tiles.length) {
+                    level.tiles[ty * level.width + tx] = 7;
+                }
                 Audio.sfx.levelComplete();
+                Renderer.flash('#fff');
+                Engine.shakeCamera(15);
             }
         }
 
-        // Check death => game over state (after too many deaths or permanent)
+        // Track deaths
         if (player.dead) {
             totalDeaths = player.deaths;
         }
@@ -290,13 +278,15 @@
                     const key = currentLevel + '_' + tx + '_' + ty;
                     if (!terminalInteracted[key + '_cp']) {
                         terminalInteracted[key + '_cp'] = true;
-                        Player.setCheckpoint(tx * Engine.TILE, (ty - 1) * Engine.TILE);
+                        Player.setCheckpoint(tx * Engine.TILE, ty * Engine.TILE - player.h);
                         Audio.sfx.checkpoint();
                     }
                 }
 
-                // Exit
-                if (tile === 7 && Math.abs(player.x - tx * Engine.TILE) < 12 && Math.abs(player.y - ty * Engine.TILE) < 16) {
+                // Exit — check player center is near exit tile center
+                if (tile === 7 &&
+                    Math.abs((player.x + player.w / 2) - (tx * Engine.TILE + 8)) < 16 &&
+                    Math.abs((player.y + player.h / 2) - (ty * Engine.TILE + 8)) < 20) {
                     nextLevel();
                     return;
                 }

@@ -289,8 +289,8 @@ const Enemies = (() => {
             const dy = p.y - e.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < 150) {
-                e.x = p.x + (Math.random() - 0.5) * 60;
-                e.y = p.y + (Math.random() - 0.5) * 40;
+                e.x = Math.max(16, Math.min(p.x + (Math.random() - 0.5) * 60, (level.width || 60) * 16 - 32));
+                e.y = Math.max(16, Math.min(p.y + (Math.random() - 0.5) * 40, (level.height || 12) * 16 - 32));
                 Renderer.addHitSparks(e.x + 8, e.y + 8, '#00ffff');
             }
         }
