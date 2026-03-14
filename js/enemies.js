@@ -250,10 +250,11 @@ const Enemies = (() => {
             e.facing = dx > 0 ? 1 : -1;
         }
 
-        e.vx *= 0.95;
-        e.vy *= 0.95;
-        e.vx = Math.max(-e.speed, Math.min(e.speed, e.vx));
-        e.vy = Math.max(-e.speed, Math.min(e.speed, e.vy));
+        e.vx *= 0.93;
+        e.vy *= 0.93;
+        const maxSpd = e.speed * 1.5;
+        e.vx = Math.max(-maxSpd, Math.min(maxSpd, e.vx));
+        e.vy = Math.max(-maxSpd, Math.min(maxSpd, e.vy));
 
         e.x += e.vx;
         e.y += e.vy;
