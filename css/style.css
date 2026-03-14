@@ -1,0 +1,103 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#gameCanvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+}
+
+#touch-controls {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    pointer-events: none;
+    z-index: 100;
+}
+
+#dpad {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    width: 130px;
+    height: 130px;
+    pointer-events: auto;
+}
+
+.dpad-btn {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 8px;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.dpad-btn:active {
+    background: rgba(255,255,255,0.5);
+}
+
+#btn-up { left: 43px; top: 0; }
+#btn-down { left: 43px; bottom: 0; }
+#btn-left { left: 0; top: 43px; }
+#btn-right { right: 0; top: 43px; }
+
+#action-buttons {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    pointer-events: auto;
+}
+
+.action-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.4);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn:active {
+    background: rgba(255,255,255,0.5);
+}
+
+@media (hover: none) and (pointer: coarse) {
+    #touch-controls {
+        display: block;
+    }
+}
