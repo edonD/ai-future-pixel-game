@@ -121,7 +121,8 @@
 
     function updatePlaying(dt) {
         if (transitioning) {
-            Renderer.updateTransition(dt);
+            const still = Renderer.updateTransition(dt);
+            if (!still) transitioning = false;
             return;
         }
 

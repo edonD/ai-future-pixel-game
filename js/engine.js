@@ -64,9 +64,11 @@ const Engine = (() => {
     function resize() {
         const scaleX = window.innerWidth / WIDTH;
         const scaleY = window.innerHeight / HEIGHT;
-        const scale = Math.floor(Math.min(scaleX, scaleY)) || 1;
-        canvas.style.width = (WIDTH * scale) + 'px';
-        canvas.style.height = (HEIGHT * scale) + 'px';
+        // Use integer scaling when possible for crisp pixels, but allow fractional for small screens
+        let scale = Math.min(scaleX, scaleY);
+        if (scale >= 2) scale = Math.floor(scale);
+        canvas.style.width = Math.floor(WIDTH * scale) + 'px';
+        canvas.style.height = Math.floor(HEIGHT * scale) + 'px';
     }
 
     function isPressed(code) {
