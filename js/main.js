@@ -411,6 +411,26 @@
         // Particles
         Renderer.drawParticles(ctx, cam.x, cam.y);
 
+        // Terminal proximity prompt
+        if (player && level && !UI.isTypewriterActive()) {
+            const px = Math.floor((player.x + player.w / 2) / Engine.TILE);
+            const py = Math.floor((player.y + player.h / 2) / Engine.TILE);
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    const tile = Engine.getTile(level, px + dx, py + dy);
+                    if (tile === 8) {
+                        const sx = (px + dx) * Engine.TILE - cam.x;
+                        const sy = (py + dy) * Engine.TILE - cam.y - 10;
+                        ctx.fillStyle = '#0f0';
+                        ctx.font = '6px monospace';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('ENTER', sx + 8, sy);
+                        ctx.textAlign = 'left';
+                    }
+                }
+            }
+        }
+
         // HUD
         UI.drawHUD(ctx, player || { hp: 0, maxHp: 5 }, level ? level.name : '');
 

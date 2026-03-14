@@ -78,7 +78,10 @@ const UI = (() => {
 
         // Level name intro
         if (levelIntroTimer > 0) {
-            const alpha = Math.min(1, levelIntroTimer, (3 - (3 - levelIntroTimer)));
+            // Fade in during first 0.5s, hold, fade out during last 0.5s
+            let alpha = 1;
+            if (levelIntroTimer > 2.5) alpha = (3 - levelIntroTimer) * 2; // Fade in
+            else if (levelIntroTimer < 0.5) alpha = levelIntroTimer * 2; // Fade out
             ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
             ctx.fillStyle = '#fff';
             ctx.font = 'bold 12px monospace';
