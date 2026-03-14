@@ -57,17 +57,74 @@ const Renderer = (() => {
         const scrollX2 = camX * 0.3;
         drawBgLayer(ctx, levelIdx, scrollX2, H, 0.6);
         ctx.globalAlpha = 1;
+
+        // Stars / floating lights for some levels
+        if (levelIdx === 7 || levelIdx === 9) { // Data Ocean, The Core
+            ctx.globalAlpha = 0.4;
+            for (let i = 0; i < 15; i++) {
+                const sx = (i * 23 + camX * 0.05 + Math.sin(Date.now() / 1000 + i) * 10) % W;
+                const sy = (i * 17 + Math.cos(Date.now() / 1200 + i * 0.5) * 8) % H;
+                ctx.fillStyle = pal.accent;
+                ctx.fillRect(sx, sy, 1, 1);
+            }
+            ctx.globalAlpha = 1;
+        }
     }
 
     function drawBgLayer(ctx, levelIdx, scrollX, H, scale) {
         const pal = getPalette(levelIdx);
         ctx.fillStyle = pal.wall;
         const offset = -scrollX % 80;
-        for (let i = -1; i < 6; i++) {
-            const x = offset + i * 80;
-            const h = 30 + Math.sin(i * 2.3 + levelIdx) * 20;
-            ctx.fillRect(x, H - h * scale, 40, h * scale);
-            ctx.fillRect(x + 20, H - h * scale - 10 * scale, 20, 10 * scale);
+
+        switch (levelIdx) {
+            case 0: // Abandoned District — crumbling buildings
+                for (let i = -1; i < 6; i++) {
+                    const x = offset + i * 60;
+                    const h = 40 + Math.sin(i * 1.7) * 25;
+                    ctx.fillRect(x, H - h * scale, 25, h * scale);
+                    // Windows
+                    ctx.fillStyle = pal.accent;
+                    for (let wy = 0; wy < 3; wy++) {
+                        if (Math.sin(i * 3 + wy) > 0) {
+                            ctx.fillRect(x + 4, H - h * scale + 8 + wy * 12, 4, 3);
+                            ctx.fillRect(x + 14, H - h * scale + 8 + wy * 12, 4, 3);
+                        }
+                    }
+                    ctx.fillStyle = pal.wall;
+                }
+                break;
+            case 1: // Algorithm City — geometric towers
+                for (let i = -1; i < 8; i++) {
+                    const x = offset + i * 45;
+                    const h = 50 + (i % 3) * 20;
+                    ctx.fillRect(x, H - h * scale, 20, h * scale);
+                    ctx.fillStyle = pal.accent;
+                    ctx.fillRect(x + 8, H - h * scale - 5 * scale, 4, 5 * scale);
+                    ctx.fillStyle = pal.wall;
+                }
+                break;
+            case 2: // Drone Fields — rolling hills
+                ctx.fillStyle = pal.ground;
+                for (let x = 0; x < 340; x += 2) {
+                    const h = 20 + Math.sin((x + offset) * 0.02) * 15 + Math.sin((x + offset) * 0.05) * 8;
+                    ctx.fillRect(x, H - h * scale, 2, h * scale);
+                }
+                // Wheat stalks
+                ctx.fillStyle = pal.accent;
+                for (let i = 0; i < 20; i++) {
+                    const x = ((i * 17 + offset * 0.3) % 320);
+                    const h = 8 + Math.sin(Date.now() / 500 + i) * 3;
+                    ctx.fillRect(x, H - (25 + h) * scale, 1, h * scale);
+                }
+                break;
+            default: // Generic buildings
+                for (let i = -1; i < 6; i++) {
+                    const x = offset + i * 80;
+                    const h = 30 + Math.sin(i * 2.3 + levelIdx) * 20;
+                    ctx.fillRect(x, H - h * scale, 40, h * scale);
+                    ctx.fillRect(x + 20, H - h * scale - 10 * scale, 20, 10 * scale);
+                }
+                break;
         }
     }
 
@@ -187,16 +244,20 @@ const Renderer = (() => {
         }
 
         // Body
+        ctx.fillStyle = '#3377aa';
+        ctx.fillRect(2, 5, 8, 9);
+        // Body highlight
         ctx.fillStyle = '#4488cc';
-        ctx.fillRect(2, 4, 8, 10);
-        // Head
-        ctx.fillStyle = '#ffcc88';
-        ctx.fillRect(3, 0, 6, 5);
-        // Eye
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(7, 1, 2, 2);
-        ctx.fillStyle = '#222';
-        ctx.fillRect(8, 2, 1, 1);
+        ctx.fillRect(3, 5, 6, 2);
+        // Head / helmet
+        ctx.fillStyle = '#556677';
+        ctx.fillRect(2, 0, 8, 6);
+        // Visor
+        ctx.fillStyle = '#44ddff';
+        ctx.fillRect(6, 1, 3, 3);
+        // Visor shine
+        ctx.fillStyle = '#aaeeff';
+        ctx.fillRect(7, 1, 1, 1);
         // Legs animation
         ctx.fillStyle = '#335577';
         if (player.onGround) {
